@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Current Inbox Size</title>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/underscore-min.js"></script>
+    <script src="js/Chart.js"></script>
+  </head>
+  <body>
+    <canvas id="chart" width="1000" height="400"></canvas>
+    <script>
+      var ctx = $("#chart").get(0).getContext("2d");
+      var chart = new Chart(ctx);
+
+      $.ajax({
+        url: '/emails/inbox_count',
+        success: function(d) {
+          var timesAsTimestamp = _.keys(d);
+          var times = [];
+          _.each(timesAsTimestamp, function(element, index, list) {
+            time = new Date(element * 1000);
+            times.push(time.toISOString().match(/(\d{2}:\d{2})/)[0]);
+          });
+          var data = {
+            labels: times,
+            datasets: [
+              {
+                fillColor : "rgba(151,187,205,0.5)",
+                strokeColor : "rgba(151,187,205,1)",
+                pointColor : "rgba(151,187,205,1)",
+                pointStrokeColor : "#fff",
+                data: _.map(d, function(num, key) { return num; })
+              }
+            ]
+          };
+          chart.Line(data, {bezierCurve: false,animation: false});
+        }
+      });
+  //        data: 
+    </script>
+  </body>
+</html>
